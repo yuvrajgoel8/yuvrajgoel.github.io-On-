@@ -32,7 +32,7 @@ nav{position:fixed;top:0;width:100%;z-index:100;padding:20px 60px;display:flex;j
 .nav-badge{background:rgba(0,245,255,0.1);border:1px solid rgba(0,245,255,0.3);color:var(--cyan);padding:6px 16px;font-size:11px;letter-spacing:2px;border-radius:2px;text-transform:uppercase;font-family:'JetBrains Mono',monospace}
 
 /* HERO */
-.hero{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:0 20px}
+.hero{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:80px 20px 40px;box-sizing:border-box}
 
 .hero-tag{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:3px;color:var(--cyan);margin-bottom:32px;opacity:0;animation:fadeUp .6s .2s forwards;display:flex;align-items:center;gap:12px}
 .hero-tag::before,.hero-tag::after{content:'';width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--cyan))}
@@ -41,8 +41,8 @@ nav{position:fixed;top:0;width:100%;z-index:100;padding:20px 60px;display:flex;j
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 
 /* BIG NAME */
-.name-wrap{position:relative;opacity:0;animation:fadeUp .8s .4s forwards}
-.hero-name{font-family:'Syne',sans-serif;font-size:clamp(50px,10vw,140px);font-weight:800;line-height:.9;letter-spacing:-2px;text-transform:uppercase;position:relative;word-break:break-word;text-align:center;}
+.name-wrap{position:relative;opacity:0;animation:fadeUp .8s .4s forwards;width:100%;max-width:100%;overflow:visible}
+.hero-name{font-family:'Syne',sans-serif;font-size:clamp(36px,12vw,160px);font-weight:800;line-height:.95;letter-spacing:clamp(-1px,-0.3vw,-4px);text-transform:uppercase;position:relative;width:100%;text-align:center}
 .name-yuvraj{display:block;
   background:linear-gradient(135deg,#fff 0%,#fff 40%,var(--cyan) 60%,var(--gold) 100%);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;
@@ -62,8 +62,8 @@ nav{position:fixed;top:0;width:100%;z-index:100;padding:20px 60px;display:flex;j
 @keyframes shimmer{0%,100%{filter:brightness(1)}50%{filter:brightness(1.4) drop-shadow(0 0 30px rgba(0,245,255,0.6))}}
 
 /* GLITCH */
-.glitch{position:relative}
-.glitch::before,.glitch::after{content:attr(data-text);position:absolute;inset:0;font-family:'Syne',sans-serif;font-size:inherit;font-weight:800;letter-spacing:-4px;text-transform:uppercase}
+.glitch{position:relative;display:block}
+.glitch::before,.glitch::after{content:attr(data-text);position:absolute;inset:0;font-family:'Syne',sans-serif;font-size:inherit;font-weight:800;letter-spacing:inherit;text-transform:uppercase;text-align:center}
 .glitch::before{animation:glitch1 4s infinite;color:rgba(0,245,255,0.4);clip-path:polygon(0 30%,100% 30%,100% 50%,0 50%)}
 .glitch::after{animation:glitch2 4s infinite;color:rgba(255,100,100,0.3);clip-path:polygon(0 60%,100% 60%,100% 75%,0 75%)}
 @keyframes glitch1{0%,90%,100%{transform:none}92%{transform:translate(-3px,1px)}95%{transform:translate(3px,-1px)}}
@@ -165,6 +165,26 @@ footer{position:relative;z-index:1;padding:36px 80px;border-top:1px solid rgba(2
   .stats-row{grid-template-columns:1fr 1fr}
   footer{padding:24px 20px;flex-direction:column;gap:20px;text-align:center}
   .f-links{flex-wrap:wrap;justify-content:center}
+  .hero{padding:80px 16px 40px;min-height:100svh}
+  .hero-name{font-size:clamp(36px,14vw,90px);letter-spacing:-1px}
+  .hero-role{gap:6px}
+  .role-chip{padding:6px 14px;font-size:11px}
+  .hero-scroll{margin-top:36px}
+}
+
+/* Landscape orientation on phones */
+@media(max-height:500px) and (orientation:landscape){
+  .hero{min-height:100svh;padding:70px 40px 20px;justify-content:center}
+  .hero-name{font-size:clamp(28px,8vh,70px);letter-spacing:-1px;line-height:1}
+  .hero-tag{margin-bottom:12px}
+  .hero-role{margin-top:12px}
+  .hero-scroll{margin-top:16px}
+  .scroll-line{height:30px}
+}
+
+@media(max-width:480px){
+  .hero-name{font-size:clamp(36px,13.5vw,80px);letter-spacing:0px}
+  .name-wrap{padding:0 4px}
 }
 </style>
 </head>
@@ -295,6 +315,7 @@ const x=c.getContext('2d');
 let W,H;
 function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}
 resize();window.addEventListener('resize',resize);
+window.addEventListener('orientationchange',()=>{setTimeout(()=>{resize();initCols();},100)});
 
 const chars='01アイウエオカキクケコサシスセソタチツテト';
 const cols=[];
@@ -351,13 +372,15 @@ animate();
 const obs=new IntersectionObserver(e=>{e.forEach(i=>{if(i.isIntersecting)i.target.classList.add('visible')})},{threshold:.1});
 document.querySelectorAll('.reveal').forEach(r=>obs.observe(r));
 
-// MOUSE TILT on name
+// MOUSE TILT on name — desktop only
 const nameWrap=document.querySelector('.name-wrap');
-document.addEventListener('mousemove',e=>{
-  const rx=(e.clientY/window.innerHeight-.5)*8;
-  const ry=(e.clientX/window.innerWidth-.5)*-8;
-  nameWrap.style.transform=`perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg)`;
-});
+if(window.matchMedia('(pointer:fine)').matches){
+  document.addEventListener('mousemove',e=>{
+    const rx=(e.clientY/window.innerHeight-.5)*8;
+    const ry=(e.clientX/window.innerWidth-.5)*-8;
+    nameWrap.style.transform=`perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+  });
+}
 </script>
 </body>
 </html>
